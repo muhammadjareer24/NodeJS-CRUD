@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Profile</title>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <header class="bg-blue-600 p-4 text-white text-center">
+      <h1 class="text-2xl">Profile</h1>
+    </header>
+    <main class="p-8">
+      <p class="text-xl font-semibold py-2">Here are the details... ⬇</p>
+      <form onsubmit="updateProfile(event)" class="mt-6">
+        <label class="font-semibold" for="fullName">Full Name:</label>
+        <input
+          type="text"
+          placeholder="Full Name"
+          name="fullName"
+          id="fullName"
+          value="<%= user.fullName %>"
+          class="w-full block p-2 mb-4 mt-1 border rounded"
+        />
+        <label class="font-semibold" for="email">Email:</label>
+        <input
+          type="email"
+          placeholder="Email"
+          value="<%= user.email %>"
+          name="email"
+          id="email"
+          class="w-full block p-2 mb-4 mt-1 border rounded"
+        />
+        <label class="font-semibold" for="password">Password:</label>
+        <input
+          type="password"
+          placeholder="Password"
+          value="<%= user.password %>"
+          name="password"
+          id="password"
+          class="w-full block p-2 mb-4 mt-1 border rounded"
+        />
+        <div class="flex gap-6">
+          <button
+            type="submit"
+            class="w-full font-semibold px-4 py-2 bg-blue-500 text-white rounded transition-colors duration-200 hover:bg-blue-600"
+          >
+            Update
+          </button>
+          <button
+            type="button"
+            onclick="deleteProfile()"
+            class="w-full font-semibold px-4 py-2 bg-red-500 text-white rounded transition-colors duration-200 hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
+      </form>
+    </main>
+  </body>
+  <script>
+    // Updating Profile
+    const updateProfile = async (event) => {
+      event.preventDefault();
+
+      const fullName = document.querySelector("#fullName").value;
+      const email = document.querySelector("#email").value;
+      const password = document.querySelector("#password").value;
+
+      const res = await fetch("/users/<%= user.id %>", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fullName, email, password }),
+      });
+
+      if (res.redirected) {
+        alert("Profile updated successfully");
+        location.href = res.url;
+      } else {
+        alert("Failed to update profile");
+      }
+    };
+
+    // Deleting Profile
+    const deleteProfile = async () => {
+      if (
+        !confirm(
+          "Are you sure you want to delete your account? This action cannot be undone."
+        )
+      ) {
+        return;
+      }
+      const res = await fetch("/users/<%= user.id %>", {
+        method: "DELETE",
+      });
+
+      if (res.redirected) {
+        alert("Account deleted successfully");
+        location.href = res.url;
+      } else {
+        alert("Failed to delete account");
+      }
+    };
+  </script>
+</html>
